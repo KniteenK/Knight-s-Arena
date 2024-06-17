@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
-import Layout from './Layout';
+import { FaFlag, FaHandshake } from 'react-icons/fa';
 
 const ChessboardPage = () => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
-  
+  const [moves, setMoves] = useState([]);
 
   const onDrop = (sourceSquare, targetSquare) => {
-    console.log(sourceSquare);
-    console.log(targetSquare);
-    
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q',
+      promotion: 'q', // always promote to a queen for simplicity
     });
-    
 
     if (move === null) return false; // illegal move
-    console.log(gameCopy.fen());
+
     setFen(gameCopy.fen());
     setGame(gameCopy);
-    
+    setMoves((prevMoves) => [...prevMoves, `Player: ${sourceSquare}-${targetSquare}`]);
 
+    // Delay computer's move to allow the board to update
+    setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
     return true;
   };
 
-  useEffect(() => {
-    if(game.turn()=='w') return;
-    const gameCopy = new Chess(game.fen());
+  const makeComputerMove = (fen) => {
+    const gameCopy = new Chess(fen);
     const possibleMoves = gameCopy.moves();
 
     if (possibleMoves.length === 0) return; // game over
@@ -40,22 +37,53 @@ const ChessboardPage = () => {
     gameCopy.move(randomMove);
     setFen(gameCopy.fen());
     setGame(gameCopy);
-  },[game.turn()]);
+    setMoves((prevMoves) => [...prevMoves, `Computer: ${randomMove}`]);
+  };
+
+  // Ensure computer moves only when it's their turn
+  useEffect(() => {
+    if (game.turn() === 'b') {
+      makeComputerMove(game.fen());
+    }
+  }, [fen]); // Only run the effect when the FEN changes
 
   return (
-    <>
-      <div className="flex justify-center">
-        <div style={{ width: '400px', height: '400px' }}>
-          <Chessboard 
-          
-            position={game.fen()}  
-            onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}
-            
+    <div className="flex h-screen">
+      {/* Player Info Section */}
+      <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
+        <div className="text-white text-xl mb-2">Stockfish</div>
+        <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
+      </div>
 
+      {/* Chessboard Section */}
+      <div className="flex-1 flex justify-center items-center bg-gray-900">
+        <div className="flex justify-center items-center h-full">
+          <Chessboard
+            position={fen}
+            onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}
+            boardWidth={Math.min(window.innerHeight * 0.9, window.innerWidth * 0.6)} // Responsive board size
           />
         </div>
       </div>
-    </>
+
+      {/* Moves and Buttons Section */}
+      <div className="w-1/5 bg-gray-900 p-4 overflow-y-auto">
+        <h2 className="text-2xl text-white font-bold mb-4">Moves</h2>
+        <ul className="mb-4 text-white">
+          {moves.map((move, index) => (
+            <li key={index} className="mb-2">{move}</li>
+          ))}
+        </ul>
+        <div className="flex space-x-4">
+          <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            <FaFlag />
+          </button>
+          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+            <FaHandshake />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
