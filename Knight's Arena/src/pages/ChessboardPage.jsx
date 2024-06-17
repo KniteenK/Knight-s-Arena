@@ -23,7 +23,7 @@ const ChessboardPage = () => {
     setMoves((prevMoves) => [...prevMoves, `Player: ${sourceSquare}-${targetSquare}`]);
 
     // Delay computer's move to allow the board to update
-    setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
+    // setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
     return true;
   };
 
