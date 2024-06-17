@@ -1,6 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+
+  const navigate = useNavigate();
+
+  const handleVsComputerClick = () => {
+    navigate('/VsComputer');
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <header className="w-full bg-gray-800 p-4">
@@ -18,7 +26,11 @@ const Home = () => {
         <p className="text-lg mb-6">Play chess with friends, join tournaments, and improve your skills.</p>
         <div className="flex space-x-4">
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">Play Online</button>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">vs Computer</button>
+          <button 
+          onClick={handleVsComputerClick} 
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">
+            vs Computer
+          </button>
         </div>
       </main>
 
