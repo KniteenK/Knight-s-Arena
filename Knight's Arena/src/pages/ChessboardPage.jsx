@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import Layout from './Layout';
@@ -6,25 +6,31 @@ import Layout from './Layout';
 const ChessboardPage = () => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
+  
 
   const onDrop = (sourceSquare, targetSquare) => {
+    console.log(sourceSquare);
+    console.log(targetSquare);
+    
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,
       to: targetSquare,
       promotion: 'q',
     });
+    
 
     if (move === null) return false; // illegal move
-
+    console.log(gameCopy.fen());
     setFen(gameCopy.fen());
     setGame(gameCopy);
+    
 
-    setTimeout(makeComputerMove, 500); // make computer move after a short delay
     return true;
   };
 
-  const makeComputerMove = () => {
+  useEffect(() => {
+    if(game.turn()=='w') return;
     const gameCopy = new Chess(game.fen());
     const possibleMoves = gameCopy.moves();
 
@@ -34,15 +40,18 @@ const ChessboardPage = () => {
     gameCopy.move(randomMove);
     setFen(gameCopy.fen());
     setGame(gameCopy);
-  };
+  },[game.turn()]);
 
   return (
     <>
       <div className="flex justify-center">
         <div style={{ width: '400px', height: '400px' }}>
           <Chessboard 
-            position={fen} 
-            onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)} 
+          
+            position={game.fen()}  
+            onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}
+            
+
           />
         </div>
       </div>
