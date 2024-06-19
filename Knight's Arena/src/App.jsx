@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/VsComputer" element={<VsComputer />} />
-        
+        <Route path="/Home" element={<Home />} />
         <Route path="/:id" element={<OneVone />} />
       </Routes>
     </Router>

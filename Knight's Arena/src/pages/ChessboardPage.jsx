@@ -16,24 +16,25 @@ const ChessboardPage = (props) => {
   const [result, setResult] = useState('');
   
   const [socket, setSocket] = useState(null);
+  const navigate = useNavigate();  // Correctly define the navigate function here
 
-    useEffect(() => {
-      const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
-        setSocket(ws);
+  useEffect(() => {
+    const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
+    setSocket(ws);
 
-        ws.onmessage = (event) => {
-          console.log(event.data);
-          
-            const gameCopy = new Chess(event.data);
-            
-            setFen(gameCopy.fen());
-            setGame(gameCopy);
-        };
+    ws.onmessage = (event) => {
+      console.log(event.data);
+      
+      const gameCopy = new Chess(event.data);
+      
+      setFen(gameCopy.fen());
+      setGame(gameCopy);
+    };
 
-        return () => {
-            ws.close();
-        };
-    }, [game]);
+    return () => {
+      ws.close();
+    };
+  }, [game]);
 
   const onDrop = (sourceSquare, targetSquare) => {
     console.log(moves);
@@ -65,13 +66,12 @@ const ChessboardPage = (props) => {
   };
 
   const makeComputerMove = (fen) => {
-   
     const gameCopy = new Chess(fen);
     const possibleMoves = gameCopy.moves();
 
     if (possibleMoves.length === 0) {
       // handleGameOver(gameCopy) ;
-      return ;
+      return;
     }
 
     const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
@@ -119,14 +119,14 @@ const ChessboardPage = (props) => {
     setResult('');
   };
 
-  const Home = () => {
+  const HandleHomeClick = () => {
     navigate('/Home');
   };
 
   // Ensure computer moves only when it's their turn
   useEffect(() => {
     console.log(props);
-    if (game.turn() === 'b' && props.props != 'h') {
+    if (game.turn() === 'b' && props.props !== 'h') {
       makeComputerMove(game.fen());
     }
   }, [fen]); // Only run the effect when the FEN changes
@@ -135,8 +135,8 @@ const ChessboardPage = (props) => {
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-       {props.props!='h'&& <div className="text-white text-xl mb-2">Stockfish</div> &&
-        <div className="text-white text-xl mb-2">Player 1 (1500?)</div>}
+       {props.props !== 'h' && <><div className="text-white text-xl mb-2">Stockfish</div>
+        <div className="text-white text-xl mb-2">Player 1 (1500?)</div></>}
       </div>
 
       {/* Chessboard Section */}
@@ -190,8 +190,8 @@ const ChessboardPage = (props) => {
             </button>
 
             <button
-              onClick={Home}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">           
+              onClick={HandleHomeClick}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4">
               Home
             </button>
           </div>
