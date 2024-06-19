@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
+import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom';
+
+// Set the app element for accessibility
+Modal.setAppElement('#root');
 
 const ChessboardPage = () => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+  const [result, setResult] = useState('');
 
   const onDrop = (sourceSquare, targetSquare) => {
     const gameCopy = new Chess(game.fen());
@@ -22,8 +29,12 @@ const ChessboardPage = () => {
     setGame(gameCopy);
     setMoves((prevMoves) => [...prevMoves, `Player: ${sourceSquare}-${targetSquare}`]);
 
-    // Delay computer's move to allow the board to update
-    // setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
+    if (gameCopy.isGameOver()) {
+      handleGameOver(gameCopy);
+    } else {
+      // setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
+    }
+
     return true;
   };
 
@@ -31,18 +42,63 @@ const ChessboardPage = () => {
     const gameCopy = new Chess(fen);
     const possibleMoves = gameCopy.moves();
 
-    if (possibleMoves.length === 0) return; // game over
+    if (possibleMoves.length === 0) {
+      // handleGameOver(gameCopy) ;
+      return ;
+    }
 
     const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     gameCopy.move(randomMove);
     setFen(gameCopy.fen());
     setGame(gameCopy);
     setMoves((prevMoves) => [...prevMoves, `Computer: ${randomMove}`]);
+
+    if (gameCopy.isGameOver()) {
+      handleGameOver(gameCopy);
+    }
+  };
+
+  const handleGameOver = (gameInstance) => {
+    let resultMessage = '';
+    if (gameInstance.isCheckmate()) {
+      resultMessage = gameInstance.turn() === 'b' ? 'Player wins by checkmate' : 'Computer wins by checkmate';
+    } else if (gameInstance.isStalemate()) {
+      resultMessage = 'Draw due to stalemate';
+    } else if (gameInstance.isInsufficientMaterial()) {
+      resultMessage = 'Draw due to insufficient material';
+    } else if (gameInstance.isDraw()) {
+      resultMessage = 'Game is a draw';
+    }
+    setResult(resultMessage);
+    setGameOver(true);
+  };
+
+  const handleResign = () => {
+    setResult('Player resigns. Computer wins.');
+    setGameOver(true);
+  };
+
+  const handleDraw = () => {
+    setResult('Draw by agreement');
+    setGameOver(true);
+  };
+
+  const handleNewGame = () => {
+    const newGame = new Chess();
+    setGame(newGame);
+    setFen(newGame.fen());
+    setMoves([]);
+    setGameOver(false);
+    setResult('');
+  };
+
+  const Home = () => {
+    navigate('/Home');
   };
 
   // Ensure computer moves only when it's their turn
   useEffect(() => {
-    if (game.turn() === 'b') {
+    if (game.turn() === 'b' && !gameOver) {
       makeComputerMove(game.fen());
     }
   }, [fen]); // Only run the effect when the FEN changes
@@ -75,14 +131,45 @@ const ChessboardPage = () => {
           ))}
         </ul>
         <div className="flex space-x-4">
-          <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+          <button
+            onClick={handleResign}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
             <FaFlag />
           </button>
-          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+          <button
+            onClick={handleDraw}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             <FaHandshake />
           </button>
         </div>
       </div>
+
+      {/* Modal for Game Over */}
+      <Modal
+        isOpen={gameOver}
+        onRequestClose={handleNewGame}
+        contentLabel="Game Over"
+        className="flex justify-center items-center fixed inset-0 bg-gray-900 bg-opacity-75"
+        overlayClassName="flex justify-center items-center fixed inset-0 bg-gray-900 bg-opacity-75"
+      >
+        <div className="bg-white p-8 rounded shadow-lg text-center">
+          <h2 className="text-2xl font-bold mb-4">{result}</h2>
+          <div>
+            <button
+              onClick={handleNewGame}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+              New Game
+            </button>
+
+            <button
+              onClick={Home}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">           
+              Home
+            </button>
+          </div>
+          
+        </div>
+      </Modal>
     </div>
   );
 };
