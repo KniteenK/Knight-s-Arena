@@ -8,14 +8,35 @@ import { useNavigate } from 'react-router-dom';
 // Set the app element for accessibility
 Modal.setAppElement('#root');
 
-const ChessboardPage = () => {
+const ChessboardPage = (props) => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [result, setResult] = useState('');
+  
+  const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+      const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
+        setSocket(ws);
+
+        ws.onmessage = (event) => {
+          console.log(event.data);
+          
+            const gameCopy = new Chess(event.data);
+            
+            setFen(gameCopy.fen());
+            setGame(gameCopy);
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, [game]);
 
   const onDrop = (sourceSquare, targetSquare) => {
+    console.log(moves);
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,
@@ -35,10 +56,16 @@ const ChessboardPage = () => {
       // setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
     }
 
+    if (socket) {
+      console.log(gameCopy.fen());
+      socket.send(gameCopy.fen());
+    }
+
     return true;
   };
 
   const makeComputerMove = (fen) => {
+   
     const gameCopy = new Chess(fen);
     const possibleMoves = gameCopy.moves();
 
@@ -98,7 +125,8 @@ const ChessboardPage = () => {
 
   // Ensure computer moves only when it's their turn
   useEffect(() => {
-    if (game.turn() === 'b' && !gameOver) {
+    console.log(props);
+    if (game.turn() === 'b' && props.props != 'h') {
       makeComputerMove(game.fen());
     }
   }, [fen]); // Only run the effect when the FEN changes
@@ -107,8 +135,8 @@ const ChessboardPage = () => {
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-        <div className="text-white text-xl mb-2">Stockfish</div>
-        <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
+       {props.props!='h'&& <div className="text-white text-xl mb-2">Stockfish</div> &&
+        <div className="text-white text-xl mb-2">Player 1 (1500?)</div>}
       </div>
 
       {/* Chessboard Section */}
