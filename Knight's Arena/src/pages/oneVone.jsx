@@ -1,15 +1,14 @@
 import React from 'react';
-import Layout from './Layout';
 import ChessboardPage from './ChessboardPage';
 
-const VsComputer = () => {
+const oneVone = () => {
   return (
     <>
       <div>
-        <ChessboardPage props="c"/>
+        <ChessboardPage props="h" />
       </div>
     </>
   );
 };
 
-export default VsComputer;
+export default oneVone;
