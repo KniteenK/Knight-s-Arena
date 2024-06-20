@@ -4,8 +4,8 @@ import { Chessboard } from 'react-chessboard';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// Set the app element for accessibility
 Modal.setAppElement('#root');
 
 const ChessboardPage = (props) => {
@@ -14,9 +14,8 @@ const ChessboardPage = (props) => {
   const [moves, setMoves] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [result, setResult] = useState('');
-  
   const [socket, setSocket] = useState(null);
-  const navigate = useNavigate();  // Correctly define the navigate function here
+  const navigate = useNavigate();
 
   useEffect(() => {
     const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
@@ -24,9 +23,7 @@ const ChessboardPage = (props) => {
 
     ws.onmessage = (event) => {
       console.log(event.data);
-      
       const gameCopy = new Chess(event.data);
-      
       setFen(gameCopy.fen());
       setGame(gameCopy);
     };
@@ -34,18 +31,17 @@ const ChessboardPage = (props) => {
     return () => {
       ws.close();
     };
-  }, [game]);
+  }, []);
 
   const onDrop = (sourceSquare, targetSquare) => {
-    console.log(moves);
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q', // always promote to a queen for simplicity
+      promotion: 'q',
     });
 
-    if (move === null) return false; // illegal move
+    if (move === null) return false;
 
     setFen(gameCopy.fen());
     setGame(gameCopy);
@@ -53,35 +49,40 @@ const ChessboardPage = (props) => {
 
     if (gameCopy.isGameOver()) {
       handleGameOver(gameCopy);
-    } else {
-      // setTimeout(() => makeComputerMove(gameCopy.fen()), 500);
     }
 
     if (socket) {
-      console.log(gameCopy.fen());
       socket.send(gameCopy.fen());
+    }
+
+    if (game.turn() === 'w' && props.props === 'c') {
+      makeComputerMove(gameCopy.fen());
     }
 
     return true;
   };
 
-  const makeComputerMove = (fen) => {
-    const gameCopy = new Chess(fen);
-    const possibleMoves = gameCopy.moves();
+  const makeComputerMove = async (fen) => {
+    try {
+      const response = await axios.get('https://stockfish.online/api/s/v2.php', {
+        params: {
+          fen: fen,
+          depth: 10, // Adjust depth as needed
+        },
+      });
 
-    if (possibleMoves.length === 0) {
-      // handleGameOver(gameCopy) ;
-      return;
-    }
+      const bestMove = response.data.bestmove;
+      const gameCopy = new Chess(fen);
+      gameCopy.move(bestMove);
+      setFen(gameCopy.fen());
+      setGame(gameCopy);
+      setMoves((prevMoves) => [...prevMoves, `Computer: ${bestMove}`]);
 
-    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-    gameCopy.move(randomMove);
-    setFen(gameCopy.fen());
-    setGame(gameCopy);
-    setMoves((prevMoves) => [...prevMoves, `Computer: ${randomMove}`]);
-
-    if (gameCopy.isGameOver()) {
-      handleGameOver(gameCopy);
+      if (gameCopy.isGameOver()) {
+        handleGameOver(gameCopy);
+      }
+    } catch (error) {
+      console.error('Error fetching Stockfish move:', error);
     }
   };
 
@@ -123,20 +124,16 @@ const ChessboardPage = (props) => {
     navigate('/Home');
   };
 
-  // Ensure computer moves only when it's their turn
-  useEffect(() => {
-    console.log(props);
-    if (game.turn() === 'b' && props.props !== 'h') {
-      makeComputerMove(game.fen());
-    }
-  }, [fen]); // Only run the effect when the FEN changes
-
   return (
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-       {props.props !== 'h' && <><div className="text-white text-xl mb-2">Stockfish</div>
-        <div className="text-white text-xl mb-2">Player 1 (1500?)</div></>}
+        {props.props !== 'h' && (
+          <>
+            <div className="text-white text-xl mb-2">Stockfish</div>
+            <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
+          </>
+        )}
       </div>
 
       {/* Chessboard Section */}
@@ -155,18 +152,22 @@ const ChessboardPage = (props) => {
         <h2 className="text-2xl text-white font-bold mb-4">Moves</h2>
         <ul className="mb-4 text-white">
           {moves.map((move, index) => (
-            <li key={index} className="mb-2">{move}</li>
+            <li key={index} className="mb-2">
+              {move}
+            </li>
           ))}
         </ul>
         <div className="flex space-x-4">
           <button
             onClick={handleResign}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
             <FaFlag />
           </button>
           <button
             onClick={handleDraw}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
             <FaHandshake />
           </button>
         </div>
@@ -185,17 +186,18 @@ const ChessboardPage = (props) => {
           <div>
             <button
               onClick={handleNewGame}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
               New Game
             </button>
 
             <button
               onClick={HandleHomeClick}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4">
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4"
+            >
               Home
             </button>
           </div>
-          
         </div>
       </Modal>
     </div>
