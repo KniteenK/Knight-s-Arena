@@ -3,14 +3,12 @@ import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
 import Modal from 'react-modal';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 Modal.setAppElement('#root');
 
-const ChessboardPage = () => {
-  const location = useLocation();
-  const { player, level } = location.state || { player: 'h', level: 1 };
+const ChessboardPage = (props) => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
@@ -24,6 +22,7 @@ const ChessboardPage = () => {
     setSocket(ws);
 
     ws.onmessage = (event) => {
+      console.log(event.data);
       const gameCopy = new Chess(event.data);
       setFen(gameCopy.fen());
       setGame(gameCopy);
@@ -56,7 +55,7 @@ const ChessboardPage = () => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'w' && player === 'c') {
+    if (game.turn() === 'w' && props.props === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 
@@ -68,10 +67,9 @@ const ChessboardPage = () => {
       const response = await axios.get('https://stockfish.online/api/s/v2.php', {
         params: {
           fen: fen,
-          depth: level,
+          depth: 10, // Adjust depth as needed
         },
       });
-      console.log('Stockfish response:', response.data);
 
       const bestMove = response.data.bestmove;
       const gameCopy = new Chess(fen);
@@ -122,7 +120,7 @@ const ChessboardPage = () => {
     setResult('');
   };
 
-  const handleHomeClick = () => {
+  const HandleHomeClick = () => {
     navigate('/Home');
   };
 
@@ -130,7 +128,7 @@ const ChessboardPage = () => {
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-        {player !== 'h' && (
+        {props.props !== 'h' && (
           <>
             <div className="text-white text-xl mb-2">Stockfish</div>
             <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
@@ -194,7 +192,7 @@ const ChessboardPage = () => {
             </button>
 
             <button
-              onClick={handleHomeClick}
+              onClick={HandleHomeClick}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4"
             >
               Home
