@@ -1,11 +1,12 @@
 import React from 'react';
-import ChessboardPage from './ChessboardPage';
+import SetLevel from './SetLevel';
 
 const VsComputer = () => {
+
   return (
     <>
       <div>
-        <ChessboardPage props = 'c' />
+        <SetLevel/>
       </div>
     </>
   );

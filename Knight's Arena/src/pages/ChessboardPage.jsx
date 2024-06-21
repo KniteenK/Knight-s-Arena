@@ -3,12 +3,14 @@ import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
 import Modal from 'react-modal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 Modal.setAppElement('#root');
 
-const ChessboardPage = (props) => {
+const ChessboardPage = () => {
+  const location = useLocation();
+  const { player, level } = location.state || { player: 'h', level: 1 };
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
@@ -22,7 +24,6 @@ const ChessboardPage = (props) => {
     setSocket(ws);
 
     ws.onmessage = (event) => {
-      console.log(event.data);
       const gameCopy = new Chess(event.data);
       setFen(gameCopy.fen());
       setGame(gameCopy);
@@ -55,7 +56,7 @@ const ChessboardPage = (props) => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'w' && props.props === 'c') {
+    if (game.turn() === 'w' && player === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 
@@ -67,9 +68,10 @@ const ChessboardPage = (props) => {
       const response = await axios.get('https://stockfish.online/api/s/v2.php', {
         params: {
           fen: fen,
-          depth: 10, // Adjust depth as needed
+          depth: level,
         },
       });
+      console.log('Stockfish response:', response.data);
 
       const bestMove = response.data.bestmove;
       const gameCopy = new Chess(fen);
@@ -120,7 +122,7 @@ const ChessboardPage = (props) => {
     setResult('');
   };
 
-  const HandleHomeClick = () => {
+  const handleHomeClick = () => {
     navigate('/Home');
   };
 
@@ -128,7 +130,7 @@ const ChessboardPage = (props) => {
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-        {props.props !== 'h' && (
+        {player !== 'h' && (
           <>
             <div className="text-white text-xl mb-2">Stockfish</div>
             <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
@@ -192,7 +194,7 @@ const ChessboardPage = (props) => {
             </button>
 
             <button
-              onClick={HandleHomeClick}
+              onClick={handleHomeClick}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4"
             >
               Home
