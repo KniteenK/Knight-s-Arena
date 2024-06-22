@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Chess } from 'chess.js';
+import { Chess } from 'chess.js' ;
 import { Chessboard } from 'react-chessboard';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
-import Modal from 'react-modal';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import Modal from 'react-modal' ;
+import { useNavigate , useLocation } from 'react-router-dom';
+import axios from 'axios' ;
 
 Modal.setAppElement('#root');
 
-const ChessboardPage = (props) => {
+const ChessboardPage = () => {
   const [game, setGame] = useState(new Chess());
+  const location = useLocation() ;
+  const { player, level } = location.state || { player: 'c', level : 1};
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
   const [gameOver, setGameOver] = useState(false);
@@ -55,7 +57,7 @@ const ChessboardPage = (props) => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'w' && props.props === 'c') {
+    if (game.turn() === 'w' && player === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 
@@ -67,7 +69,7 @@ const ChessboardPage = (props) => {
       const response = await axios.get('https://stockfish.online/api/s/v2.php', {
         params: {
           fen: fen,
-          depth: 10, // Adjust depth as needed
+          depth: level,
         },
       });
 
@@ -128,9 +130,9 @@ const ChessboardPage = (props) => {
     <div className="flex h-screen">
       {/* Player Info Section */}
       <div className="w-1/5 bg-gray-900 p-4 flex flex-col justify-center items-start">
-        {props.props !== 'h' && (
+      {player !== 'h' && (
           <>
-            <div className="text-white text-xl mb-2">Stockfish</div>
+            <div className="text-white text-xl mb-2">Stockfish {level}</div>
             <div className="text-white text-xl mb-2">Player 1 (1500?)</div>
           </>
         )}
@@ -142,7 +144,7 @@ const ChessboardPage = (props) => {
           <Chessboard
             position={fen}
             onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}
-            boardWidth={Math.min(window.innerHeight * 0.9, window.innerWidth * 0.6)} // Responsive board size
+            boardWidth={Math.min(window.innerHeight * 0.9, window.innerWidth * 0.6)}
           />
         </div>
       </div>
@@ -175,8 +177,8 @@ const ChessboardPage = (props) => {
 
       {/* Modal for Game Over */}
       <Modal
-        isOpen={gameOver}
-        onRequestClose={handleNewGame}
+        isOpen = {gameOver}
+        onRequestClose = {handleNewGame}
         contentLabel="Game Over"
         className="flex justify-center items-center fixed inset-0 bg-gray-900 bg-opacity-75"
         overlayClassName="flex justify-center items-center fixed inset-0 bg-gray-900 bg-opacity-75"

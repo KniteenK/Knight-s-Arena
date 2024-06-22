@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import './App.css'
 import Home from './pages/Home'
 import VsComputer from './pages/VsComputer';
 import PlayOnline from './pages/PlayOnline';
+import ChessboardPage from './pages/ChessboardPage';
 
 function App() {
   return (
@@ -12,6 +12,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/VsComputer" element={<VsComputer />} />
         <Route path="/PlayOnline" element={<PlayOnline />} />
+        <Route path="/ChessboardPage" element={<ChessboardPage />} />
         <Route path="/Home" element={<Home />} />
       </Routes>
     </Router>
