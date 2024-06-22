@@ -15,8 +15,8 @@ const VsComputer = () => {
     <Layout>
       <div>
       <form onSubmit={handlePlay}>
-        <label>
-          Select Level: {level}
+        <label className = "font-bold py-10 px-12">
+          Select Level : {level}
           <input 
           type="range" 
           min="1" 
@@ -25,7 +25,12 @@ const VsComputer = () => {
           onChange={(e) => setLevel(e.target.value)} 
           />
         </label>
-        <button type="submit">Play</button>
+        <div>
+          <button type="submit" 
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Play
+          </button>
+        </div>
       </form>
       </div>
     </Layout>
