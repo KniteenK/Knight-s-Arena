@@ -14,6 +14,7 @@
     "axios": "^1.7.2",
     "chess.js": "^1.0.0-beta.8",
     "chessboardjs": "^0.0.1",
+    "firebase": "^10.12.2",
     "react": "^18.2.0",
     "react-chessboard": "^4.6.0",
     "react-dom": "^18.2.0",

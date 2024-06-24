@@ -36,6 +36,9 @@ const ChessboardPage = () => {
   }, []);
 
   const onDrop = (sourceSquare, targetSquare) => {
+    if (game.turn === 'b') {
+      return false;
+    }
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,

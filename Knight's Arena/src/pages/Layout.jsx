@@ -1,13 +1,23 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Layout = ({ children }) => {
+  const navigate = new useNavigate() ;
+
+  const handlebutton1 = () => {
+    navigate('/Home') ;
+  } ;
+  // const handlebutton2 = () => {
+  //   navigate('/Home') ;
+  // }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <header className="w-full bg-gray-800 p-4">
         <nav className="container mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold">Knight's Arena</div>
           <div>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Home</button>
+            <button onClick={handlebutton1} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Home</button>
             <button className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Logout</button>
           </div>
         </nav>

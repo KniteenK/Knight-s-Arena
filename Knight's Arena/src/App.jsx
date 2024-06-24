@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import VsComputer from './pages/VsComputer';
 import PlayOnline from './pages/PlayOnline';
 import ChessboardPage from './pages/ChessboardPage';
+import Login from './pages/Login';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/VsComputer" element={<VsComputer />} />
         <Route path="/PlayOnline" element={<PlayOnline />} />
         <Route path="/ChessboardPage" element={<ChessboardPage />} />
+        <Route path="/Login" element={<Login />} />
         <Route path="/Home" element={<Home />} />
       </Routes>
     </Router>

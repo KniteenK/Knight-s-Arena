@@ -28,6 +28,10 @@ const Home = () => {
     navigate('/VsComputer');
   };
 
+  const handleLoginClick = () => {
+    navigate('/Login');
+  }
+
   return (
     <>
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
@@ -35,7 +39,7 @@ const Home = () => {
         <nav className="container mx-auto flex justify-between items-center">
           <div className="text-2xl ">Knight's Arena</div>
           <div>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">Login</button>
+            <button onClick={handleLoginClick} className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">Login</button>
             <button className="ml-4 bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded">Sign Up</button>
           </div>
         </nav>
