@@ -36,9 +36,9 @@ const ChessboardPage = () => {
   }, []);
 
   const onDrop = (sourceSquare, targetSquare) => {
-    if (game.turn === 'b') {
-      return false;
-    }
+    // if (game.turn === 'b') {
+    //   return false;
+    // }
     const gameCopy = new Chess(game.fen());
     const move = gameCopy.move({
       from: sourceSquare,
@@ -60,7 +60,7 @@ const ChessboardPage = () => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'w' && player === 'c') {
+    if (game.turn() === 'b' && player === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 
@@ -75,6 +75,7 @@ const ChessboardPage = () => {
           depth: level,
         },
       });
+      console.log(response.data.bestmove);
 
       const bestMove = response.data.bestmove;
       const gameCopy = new Chess(fen);
