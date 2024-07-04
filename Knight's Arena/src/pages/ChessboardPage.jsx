@@ -11,7 +11,7 @@ Modal.setAppElement('#root');
 const ChessboardPage = () => {
   const [game, setGame] = useState(new Chess());
   const location = useLocation() ;
-  const { player, level } = location.state || { player: 'c', level : 1};
+  const { player, level } = location.state || { player: 'h', level : 1};
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
   const [gameOver, setGameOver] = useState(false);
@@ -19,16 +19,22 @@ const ChessboardPage = () => {
   const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
-    setSocket(ws);
 
-    ws.onmessage = (event) => {
-      console.log(event.data);
-      const gameCopy = new Chess(event.data);
-      setFen(gameCopy.fen());
-      setGame(gameCopy);
-    };
+  useEffect(() => {
+    const ws = new WebSocket('ws://20.244.36.168:8000/');
+    setSocket(ws);
+    useEffect(() => {
+      const ws = new WebSocket('ws://20.244.36.168:8000/');
+        setSocket(ws);
+
+        ws.onmessage = (event) => {
+          console.log(event.data);
+          
+            const gameCopy = new Chess(event.data);
+            
+            setFen(gameCopy.fen());
+            setGame(gameCopy);
+        };
 
     return () => {
       ws.close();
