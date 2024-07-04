@@ -19,27 +19,21 @@ const ChessboardPage = () => {
   const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const ws = new WebSocket('ws://20.244.36.168:8000/');
     setSocket(ws);
-    useEffect(() => {
-      const ws = new WebSocket('ws://20.244.36.168:8000/');
-        setSocket(ws);
 
-        ws.onmessage = (event) => {
-          console.log(event.data);
-          
-            const gameCopy = new Chess(event.data);
-            
-            setFen(gameCopy.fen());
-            setGame(gameCopy);
-        };
+    ws.onmessage = (event) => {
+      console.log(event.data);
+      const gameCopy = new Chess(event.data);
+      setFen(gameCopy.fen());
+      setGame(gameCopy);
+    };
 
     return () => {
       ws.close();
     };
-  }, []);
+  }, [game]);
 
   const onDrop = (sourceSquare, targetSquare) => {
     // if (game.turn === 'b') {
@@ -66,7 +60,7 @@ const ChessboardPage = () => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'b' && player === 'c') {
+    if (game.turn() === 'w' && player === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 
