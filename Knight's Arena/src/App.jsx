@@ -7,6 +7,8 @@ import ChessboardPage from './pages/ChessboardPage';
 import Login from './pages/Login';
 // import OneVone from './pages/oneVone';
 
+import OneVone from './pages/oneVone';
+
 function App() {
   return (
     <Router>
