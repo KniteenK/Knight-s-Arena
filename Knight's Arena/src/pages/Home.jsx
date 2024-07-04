@@ -10,7 +10,7 @@ const Home = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://20.244.36.168:8000/');
+    const ws = new WebSocket('wss://knight-s-arena-backend.onrender.com');
       setSocket(ws);
       console.log("connected");
       ws.onmessage = (event) => {
