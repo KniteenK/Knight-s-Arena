@@ -6,6 +6,8 @@ import PlayOnline from './pages/PlayOnline';
 import ChessboardPage from './pages/ChessboardPage';
 import Login from './pages/Login';
 
+import OneVone from './pages/oneVone';
+
 function App() {
   return (
     <Router>
@@ -16,6 +18,8 @@ function App() {
         <Route path="/ChessboardPage" element={<ChessboardPage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Home" element={<Home />} />
+        
+        <Route path="/:id" element={<OneVone />} />
       </Routes>
     </Router>
   );
