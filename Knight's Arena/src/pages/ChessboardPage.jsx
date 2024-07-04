@@ -5,10 +5,16 @@ import { FaFlag, FaHandshake } from 'react-icons/fa';
 
 const ChessboardPage = (props) => {
   const [game, setGame] = useState(new Chess());
+  const location = useLocation() ;
+  const { player, level } = location.state || { player: 'h', level : 1};
   const [fen, setFen] = useState(game.fen());
   const [moves, setMoves] = useState([]);
   const [socket, setSocket] = useState(null);
 
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://20.244.36.168:8000/');
+    setSocket(ws);
     useEffect(() => {
       const ws = new WebSocket('ws://20.244.36.168:8000/');
         setSocket(ws);
