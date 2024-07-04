@@ -60,7 +60,7 @@ const ChessboardPage = () => {
       socket.send(gameCopy.fen());
     }
 
-    if (game.turn() === 'b' && player === 'c') {
+    if (game.turn() === 'w' && player === 'c') {
       makeComputerMove(gameCopy.fen());
     }
 

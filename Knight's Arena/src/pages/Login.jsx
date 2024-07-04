@@ -20,7 +20,6 @@ const LoginSignup = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       
-      // Save user info in the realtime database
       set(ref(db, 'users/' + user.uid), {
         username: user.displayName,
         email: user.email,
@@ -105,12 +104,6 @@ const LoginSignup = () => {
           onClick={handleGoogleLogin}
         >
           Log in with Google
-        </button>
-        <button className="w-full bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-2">
-          Log in with Apple
-        </button>
-        <button className="w-full bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded mb-2">
-          Log in with Facebook
         </button>
         <div className="text-center mt-4">
           <a
