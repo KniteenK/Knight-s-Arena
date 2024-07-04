@@ -5,6 +5,7 @@ import VsComputer from './pages/VsComputer';
 import PlayOnline from './pages/PlayOnline';
 import ChessboardPage from './pages/ChessboardPage';
 import Login from './pages/Login';
+// import OneVone from './pages/oneVone';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/ChessboardPage" element={<ChessboardPage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Home" element={<Home />} />
+        <Route path="/:id" element={<ChessboardPage />} />
       </Routes>
     </Router>
   );
