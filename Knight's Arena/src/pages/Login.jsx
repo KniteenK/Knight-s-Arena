@@ -24,6 +24,7 @@ const LoginSignup = () => {
       set(ref(db, 'users/' + user.uid), {
         username: user.displayName,
         email: user.email,
+        password: user.password,
         profile_picture: user.photoURL,
       });
 
@@ -43,6 +44,7 @@ const LoginSignup = () => {
         await set(ref(db, 'users/' + userCredential.user.uid), {
           username: username,
           email: email,
+          password: password
         });
       }
       navigate('/Home');

@@ -20,7 +20,7 @@ const ChessboardPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const ws = new WebSocket('ws://20.244.36.168:8000/');
+    const ws = new WebSocket('ws://20.244.99.167:8000/');
     setSocket(ws);
 
     ws.onmessage = (event) => {
